@@ -28,6 +28,15 @@ defmodule EcspanseLiveDashboard do
     assign(socket, nav_data: nav_data, tab_data: %{})
   end
 
+  defp apply_nav(socket, "Resources", _) do
+    nav_data =
+      get_nav_data(socket)
+      |> NavData.set_selected_tab("Resources")
+      |> NavData.set_sub_tabs([])
+
+    assign(socket, nav_data: nav_data, tab_data: %{})
+  end
+
   defp apply_nav(socket, "Systems", sub_tab) do
     nav_data =
       get_nav_data(socket)
@@ -35,7 +44,6 @@ defmodule EcspanseLiveDashboard do
       |> NavData.set_sub_tabs([
         "Startup",
         "Frame Start",
-        "Scheduled",
         "Batch",
         "Frame End",
         "Shutdown"
@@ -49,7 +57,6 @@ defmodule EcspanseLiveDashboard do
         "Startup" -> {"Startup", debug.startup_systems}
         "Frame Start" -> {"Frame Start", debug.frame_start_systems}
         "Batch" -> {"Batch", List.flatten(debug.batch_systems) |> Enum.uniq_by(& &1.module)}
-        "Scheduled" -> {"Scheduled", debug.scheduled_systems}
         "Frame End" -> {"Frame End", debug.frame_end_systems}
         "Shutdown" -> {"Shutdown", debug.shutdown_systems}
       end
@@ -94,7 +101,7 @@ defmodule EcspanseLiveDashboard do
       Map.get(
         socket.assigns,
         :nav_data,
-        NavData.new(["Summary", "Systems", "Components", "Events"])
+        NavData.new(["Summary", "Systems", "Events", "Components", "Resources"])
       )
 
   @impl true
@@ -114,7 +121,7 @@ defmodule EcspanseLiveDashboard do
 
   @impl true
   def menu_link(_, _) do
-    {:ok, "Escpanse"}
+    {:ok, "ECSpanse"}
   end
 
   @impl true
@@ -145,14 +152,16 @@ defmodule EcspanseLiveDashboard do
 
     <div style="display: flex; flex-direction: column; align-items: center;">
       <%= case @nav_data.selected_tab do %>
-        <% "Summary" -> %>
-          <.summary_tab nav_data={@nav_data} tab_data={@tab_data} page={@page} />
-        <% "Systems" -> %>
-          <.systems_tab nav_data={@nav_data} tab_data={@tab_data} page={@page} />
         <% "Components" -> %>
           Component Info
         <% "Events" -> %>
           Events Info
+        <% "Resources" -> %>
+          Resources
+        <% "Systems" -> %>
+          <.systems_tab nav_data={@nav_data} tab_data={@tab_data} page={@page} />
+        <% "Summary" -> %>
+          <.summary_tab nav_data={@nav_data} tab_data={@tab_data} page={@page} />
         <% _ -> %>
           <.summary_tab nav_data={@nav_data} tab_data={@tab_data} page={@page} />
       <% end %>
@@ -199,9 +208,6 @@ defmodule EcspanseLiveDashboard do
       <:col :let={sys} field={:execution} header="Queue" sortable={:asc}><%= sys.execution %></:col>
       <:col :let={sys} field={:run_after} header="Run After" sortable={:asc}>
         <%= Enum.join(sys.run_after, ", ") %>
-      </:col>
-      <:col :let={sys} field={:run_conditions} header="Run Conditions" sortable={:asc}>
-        <%= Enum.join(sys.run_conditions, ", ") %>
       </:col>
     </.live_table>
     """

@@ -1,18 +1,44 @@
-# EcspanseLiveDashboard
+# ECSpanse Live Dashboard
 
-To start your Phoenix server:
+<!-- MDOC !-->
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+`ECSpanse Live Dashboard` is a tool to analyze [`ECSpanse`](https://hexdocs.pm/ecspanse)
+servers. It provides insights about performance and errors for your running servers.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+It works as an additional page for the [`Phoenix LiveDashboard`](https://hexdocs.pm/phoenix_live_dashboard).
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+![ECSpanse Dashboard](https://github.com/ketupia/ecspanse_live_dashboard/blob/ed99c2eddabe8b646cb9ea6ff845305cd8b2b833/priv/static/images/summary_screenshot.png)
 
-## Learn more
+<!-- MDOC !-->
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## Features
+
+- Monitor performance through frames per second
+- Inspect running systems
+
+<!-- MDOC !-->
+
+## Integration with Phoenix LiveDashboard
+
+You can add this page to your Phoenix LiveDashboard by adding as a page in the `live_dashboard` macro at your router file.
+
+```elixir
+live_dashboard "/dashboard",
+  additional_pages: [
+    ECSpanse: {EcspanseLiveDashboard, refresher?: true}
+  ]
+```
+
+Once configured, you will be able to access the `EcspanseLiveDashboard` at `/dashboard/ecspanse`.
+
+## Installation
+
+Add the following to your `mix.exs` and run mix `deps.get`:
+
+```elixir
+def deps do
+  [
+    {:ecspanse_live_dashboard, "~> 0.1.0"}
+  ]
+end
+```
